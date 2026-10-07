@@ -14,7 +14,7 @@ import { applyParsed, parseResume, readResumeFile } from "@/lib/resume-import";
 import { downloadFile } from "@/lib/storage";
 
 export const Route = createFileRoute("/app/curriculo")({
-  validateSearch: (s: Record<string, unknown>) => ({ importar: s.importar === true || s.importar === "true" ? true : undefined }),
+  validateSearch: (s: Record<string, unknown>) => ({ importar: s["importar"] === true || s["importar"] === "true" ? true : undefined }),
   head: () => ({ meta: [{ title: "Meu Currículo — MatchCV" }, { name: "description", content: "Edite seu currículo original e importe um existente." }, { property: "og:title", content: "Meu Currículo — MatchCV" }, { property: "og:description", content: "Edite seu currículo original e importe um existente." }] }),
   component: CurriculoPage,
 });
@@ -33,7 +33,7 @@ function CurriculoPage() {
   const ats = calculateATSScore(content);
 
   const runImport = () => {
-    if (text.trim().length < 30) return toast.error("Cole um texto de currículo um pouco mais completo.");
+    if (text.trim().length < 30) { toast.error("Cole um texto de currículo um pouco mais completo."); return; }
     const parsed = parseResume(text);
     update((d) => applyParsed(d, text, parsed));
     toast.success(`Importado: ${parsed.skills.length} skills identificadas. Revise e complete os dados.`);

@@ -49,12 +49,12 @@ export function isValidData(d: unknown): d is AppData {
   if (!d || typeof d !== "object") return false;
   const o = d as Record<string, unknown>;
   return (
-    o.schemaVersion === 1 &&
-    typeof o.sessionId === "string" &&
-    typeof o.profile === "object" &&
-    Array.isArray(o.experiences) &&
-    Array.isArray(o.skills) &&
-    Array.isArray(o.resumeVersions)
+    o["schemaVersion"] === 1 &&
+    typeof o["sessionId"] === "string" &&
+    typeof o["profile"] === "object" &&
+    Array.isArray(o["experiences"]) &&
+    Array.isArray(o["skills"]) &&
+    Array.isArray(o["resumeVersions"])
   );
 }
 

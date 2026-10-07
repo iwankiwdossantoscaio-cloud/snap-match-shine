@@ -52,9 +52,9 @@ export const KNOWN_SKILLS = [
 
 export function monthsBetween(start: string, end: string): number {
   if (!start) return 0;
-  const [sy, sm] = start.split("-").map(Number);
-  const e = end ? end.split("-").map(Number) : [new Date().getFullYear(), new Date().getMonth() + 1];
-  const m = (e[0] - sy) * 12 + (e[1] - (sm || 1)) + 1;
+  const [sy = 0, sm = 1] = start.split("-").map(Number);
+  const [ey = 0, em = 1] = end ? end.split("-").map(Number) : [new Date().getFullYear(), new Date().getMonth() + 1];
+  const m = (ey - sy) * 12 + (em - (sm || 1)) + 1;
   return Number.isFinite(m) && m > 0 ? m : 0;
 }
 

@@ -11,7 +11,7 @@ export const Route = createFileRoute("/app/")({
   component: Dashboard,
 });
 
-function Stat({ icon: Icon, label, value, hint }: { icon: typeof Target; label: string; value: React.ReactNode; hint?: string }) {
+function Stat({ icon: Icon, label, value, hint }: { icon: typeof Target; label: string; value: React.ReactNode; hint?: string | undefined }) {
   return (
     <div className="rounded-lg border bg-card p-4 shadow-card">
       <div className="flex items-center gap-2 text-xs text-muted-foreground"><Icon className="h-3.5 w-3.5" /> {label}</div>
@@ -93,7 +93,7 @@ function Dashboard() {
               <li key={r} className="rounded-md bg-highlight p-2.5 text-highlight-foreground">{r}</li>
             ))}
           </ul>
-          <Button asChild variant="outline" className="mt-4 w-full"><Link to="/app/curriculo">Editar currículo</Link></Button>
+          <Button asChild variant="outline" className="mt-4 w-full"><Link to="/app/curriculo" search={{ importar: undefined }}>Editar currículo</Link></Button>
         </section>
       </div>
     </div>
