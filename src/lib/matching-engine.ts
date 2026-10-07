@@ -97,7 +97,7 @@ export function calculateMatchScore(data: AppData, job: Job): MatchResult {
     if (location === 100) strengths.push(`O modelo ${job.workMode} combina com sua preferência.`);
     else gaps.push(`O modelo de trabalho (${job.workMode}) não está entre suas preferências.`);
   } else incomplete = true;
-  if (job.workMode !== "remoto" && p.location && !norm(job.location).includes(norm(p.location).split(",")[0])) {
+  if (job.workMode !== "remoto" && p.location && !norm(job.location).includes(norm(p.location).split(",")[0] ?? "")) {
     location = p.willingToRelocate ? Math.max(location - 10, 0) : Math.min(location, 40);
   }
 

@@ -157,7 +157,7 @@ function SimpleList<T extends Row>({ listKey, fields, make, render }: {
   const { data, update } = useStore();
   const items = data[listKey] as unknown as T[];
   const [draft, setDraft] = useState<T | null>(null);
-  const first = fields[0].key;
+  const first = fields[0]!.key;
   return (
     <div className="space-y-2">
       {items.map((r) => (

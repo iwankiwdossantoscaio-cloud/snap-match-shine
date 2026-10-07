@@ -12,8 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppConfiguracoesRouteImport } from './routes/app.configuracoes'
 import { Route as AppCurriculoRouteImport } from './routes/app.curriculo'
+import { Route as AppMatchesRouteImport } from './routes/app.matches'
 import { Route as AppOnboardingRouteImport } from './routes/app.onboarding'
+import { Route as AppPerfilRouteImport } from './routes/app.perfil'
+import { Route as AppVersoesRouteImport } from './routes/app.versoes'
+import { Route as AppVagasIndexRouteImport } from './routes/app.vagas.index'
+import { Route as AppVagasJobIdRouteImport } from './routes/app.vagas.$jobId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -30,9 +36,19 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppConfiguracoesRoute = AppConfiguracoesRouteImport.update({
+  id: '/configuracoes',
+  path: '/configuracoes',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppCurriculoRoute = AppCurriculoRouteImport.update({
   id: '/curriculo',
   path: '/curriculo',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMatchesRoute = AppMatchesRouteImport.update({
+  id: '/matches',
+  path: '/matches',
   getParentRoute: () => AppRoute,
 } as any)
 const AppOnboardingRoute = AppOnboardingRouteImport.update({
@@ -40,34 +56,105 @@ const AppOnboardingRoute = AppOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPerfilRoute = AppPerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppVersoesRoute = AppVersoesRouteImport.update({
+  id: '/versoes',
+  path: '/versoes',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppVagasIndexRoute = AppVagasIndexRouteImport.update({
+  id: '/vagas/',
+  path: '/vagas/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppVagasJobIdRoute = AppVagasJobIdRouteImport.update({
+  id: '/vagas/$jobId',
+  path: '/vagas/$jobId',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/app/configuracoes': typeof AppConfiguracoesRoute
   '/app/curriculo': typeof AppCurriculoRoute
+  '/app/matches': typeof AppMatchesRoute
   '/app/onboarding': typeof AppOnboardingRoute
+  '/app/perfil': typeof AppPerfilRoute
+  '/app/versoes': typeof AppVersoesRoute
   '/app/': typeof AppIndexRoute
+  '/app/vagas/$jobId': typeof AppVagasJobIdRoute
+  '/app/vagas/': typeof AppVagasIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/app/configuracoes': typeof AppConfiguracoesRoute
   '/app/curriculo': typeof AppCurriculoRoute
+  '/app/matches': typeof AppMatchesRoute
   '/app/onboarding': typeof AppOnboardingRoute
+  '/app/perfil': typeof AppPerfilRoute
+  '/app/versoes': typeof AppVersoesRoute
   '/app': typeof AppIndexRoute
+  '/app/vagas/$jobId': typeof AppVagasJobIdRoute
+  '/app/vagas': typeof AppVagasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/app/configuracoes': typeof AppConfiguracoesRoute
   '/app/curriculo': typeof AppCurriculoRoute
+  '/app/matches': typeof AppMatchesRoute
   '/app/onboarding': typeof AppOnboardingRoute
+  '/app/perfil': typeof AppPerfilRoute
+  '/app/versoes': typeof AppVersoesRoute
   '/app/': typeof AppIndexRoute
+  '/app/vagas/$jobId': typeof AppVagasJobIdRoute
+  '/app/vagas/': typeof AppVagasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/app/curriculo' | '/app/onboarding' | '/app/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/app/configuracoes'
+    | '/app/curriculo'
+    | '/app/matches'
+    | '/app/onboarding'
+    | '/app/perfil'
+    | '/app/versoes'
+    | '/app/'
+    | '/app/vagas/$jobId'
+    | '/app/vagas/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app/curriculo' | '/app/onboarding' | '/app'
-  id: '__root__' | '/' | '/app' | '/app/curriculo' | '/app/onboarding' | '/app/'
+  to:
+    | '/'
+    | '/app/configuracoes'
+    | '/app/curriculo'
+    | '/app/matches'
+    | '/app/onboarding'
+    | '/app/perfil'
+    | '/app/versoes'
+    | '/app'
+    | '/app/vagas/$jobId'
+    | '/app/vagas'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/app/configuracoes'
+    | '/app/curriculo'
+    | '/app/matches'
+    | '/app/onboarding'
+    | '/app/perfil'
+    | '/app/versoes'
+    | '/app/'
+    | '/app/vagas/$jobId'
+    | '/app/vagas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -98,11 +185,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/configuracoes': {
+      id: '/app/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/app/configuracoes'
+      preLoaderRoute: typeof AppConfiguracoesRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/curriculo': {
       id: '/app/curriculo'
       path: '/curriculo'
       fullPath: '/app/curriculo'
       preLoaderRoute: typeof AppCurriculoRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/matches': {
+      id: '/app/matches'
+      path: '/matches'
+      fullPath: '/app/matches'
+      preLoaderRoute: typeof AppMatchesRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/onboarding': {
@@ -112,19 +213,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOnboardingRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/perfil': {
+      id: '/app/perfil'
+      path: '/perfil'
+      fullPath: '/app/perfil'
+      preLoaderRoute: typeof AppPerfilRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/versoes': {
+      id: '/app/versoes'
+      path: '/versoes'
+      fullPath: '/app/versoes'
+      preLoaderRoute: typeof AppVersoesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/vagas/': {
+      id: '/app/vagas/'
+      path: '/vagas'
+      fullPath: '/app/vagas/'
+      preLoaderRoute: typeof AppVagasIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/vagas/$jobId': {
+      id: '/app/vagas/$jobId'
+      path: '/vagas/$jobId'
+      fullPath: '/app/vagas/$jobId'
+      preLoaderRoute: typeof AppVagasJobIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppConfiguracoesRoute: typeof AppConfiguracoesRoute
   AppCurriculoRoute: typeof AppCurriculoRoute
+  AppMatchesRoute: typeof AppMatchesRoute
   AppOnboardingRoute: typeof AppOnboardingRoute
+  AppPerfilRoute: typeof AppPerfilRoute
+  AppVersoesRoute: typeof AppVersoesRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppVagasJobIdRoute: typeof AppVagasJobIdRoute
+  AppVagasIndexRoute: typeof AppVagasIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppConfiguracoesRoute: AppConfiguracoesRoute,
   AppCurriculoRoute: AppCurriculoRoute,
+  AppMatchesRoute: AppMatchesRoute,
   AppOnboardingRoute: AppOnboardingRoute,
+  AppPerfilRoute: AppPerfilRoute,
+  AppVersoesRoute: AppVersoesRoute,
   AppIndexRoute: AppIndexRoute,
+  AppVagasJobIdRoute: AppVagasJobIdRoute,
+  AppVagasIndexRoute: AppVagasIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
