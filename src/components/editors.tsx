@@ -86,9 +86,10 @@ export function ExperienceEditor() {
   const save = () => {
     if (!editing) return;
     if (!editing.company.trim() || !editing.role.trim()) return;
+    const clean = { ...editing, achievements: editing.achievements.map((a) => a.trim()).filter(Boolean) };
     update((d) => {
       const exists = d.experiences.some((e) => e.id === editing.id);
-      return { ...d, experiences: exists ? d.experiences.map((e) => (e.id === editing.id ? editing : e)) : [editing, ...d.experiences] };
+      return { ...d, experiences: exists ? d.experiences.map((e) => (e.id === clean.id ? clean : e)) : [clean, ...d.experiences] };
     });
     setEditing(null);
   };
@@ -124,7 +125,7 @@ export function ExperienceEditor() {
             <Textarea rows={3} value={editing.achievements.join("\n")} onChange={(e) => setEditing({ ...editing, achievements: e.target.value.split("\n") })} />
           </Field>
           <div className="flex gap-2">
-            <Button onClick={() => { setEditing((x) => x && { ...x, achievements: x.achievements.filter((a) => a.trim()) }); setTimeout(save); }} disabled={!editing.company.trim() || !editing.role.trim()}>Salvar experiência</Button>
+            <Button onClick={save} disabled={!editing.company.trim() || !editing.role.trim()}>Salvar experiência</Button>
             <Button variant="ghost" onClick={() => setEditing(null)}>Cancelar</Button>
           </div>
         </div>
