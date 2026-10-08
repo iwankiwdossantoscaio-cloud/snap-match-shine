@@ -10,7 +10,10 @@ export interface ParsedResume {
   linkedin: string;
   skills: string[];
   summary: string;
+  languages: string[];
 }
+
+const LANGS = ["Inglês", "Espanhol", "Francês", "Alemão", "Italiano", "Português", "Mandarim", "Japonês"];
 
 export function parseResume(text: string): ParsedResume {
   const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
@@ -21,14 +24,53 @@ export function parseResume(text: string): ParsedResume {
   const skills = KNOWN_SKILLS.filter((s) => textContains(text, s));
   const idx = lines.findIndex((l) => /^(resumo|sobre|perfil|objetivo|summary)/i.test(l));
   const summary = idx >= 0 ? (lines[idx + 1] ?? "") : "";
-  return { fullName, email, phone, linkedin, skills, summary };
+  const languages = LANGS.filter((l) => textContains(text, l));
+  return { fullName, email, phone, linkedin, skills, summary, languages };
+}
+
+async function readPdf(file: File): Promise<string> {
+  const pdfjs = await import("pdfjs-dist");
+  const worker = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
+  pdfjs.GlobalWorkerOptions.workerSrc = worker;
+  const doc = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+  const pages: string[] = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    const page = await doc.getPage(i);
+    const tc = await page.getTextContent();
+    let line = "";
+    const out: string[] = [];
+    for (const it of tc.items as { str?: string; hasEOL?: boolean }[]) {
+      line += it.str ?? "";
+      if (it.hasEOL) { out.push(line); line = ""; } else line += " ";
+    }
+    if (line) out.push(line);
+    pages.push(out.join("\n"));
+  }
+  return pages.join("\n");
+}
+
+async function readDocx(file: File): Promise<string> {
+  const mammoth = await import("mammoth/mammoth.browser");
+  const r = await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
+  return r.value;
 }
 
 export async function readResumeFile(file: File): Promise<string> {
-  if (file.size > 2 * 1024 * 1024) throw new Error("Arquivo muito grande (máx. 2 MB).");
-  const ok = /\.(txt|md)$/i.test(file.name) || file.type.startsWith("text/");
-  if (!ok) throw new Error("Nesta versão, importe arquivos .txt ou cole o texto do seu currículo.");
-  return file.text();
+  if (file.size > 5 * 1024 * 1024) throw new Error("Arquivo muito grande (máx. 5 MB).");
+  const name = file.name.toLowerCase();
+  let text = "";
+  try {
+    if (name.endsWith(".pdf") || file.type === "application/pdf") text = await readPdf(file);
+    else if (name.endsWith(".docx")) text = await readDocx(file);
+    else if (/\.(txt|md)$/.test(name) || file.type.startsWith("text/")) text = await file.text();
+    else throw new Error("Formato não suportado. Envie PDF, DOCX ou TXT.");
+  } catch (e) {
+    if (e instanceof Error && e.message.startsWith("Formato")) throw e;
+    throw new Error("Não foi possível ler o arquivo. Copie e cole o texto do currículo manualmente.");
+  }
+  if (text.trim().length < 30)
+    throw new Error("Não encontramos texto no arquivo (pode ser uma imagem escaneada). Cole o texto manualmente.");
+  return text;
 }
 
 export function applyParsed(data: AppData, text: string, p: ParsedResume): AppData {
@@ -36,17 +78,22 @@ export function applyParsed(data: AppData, text: string, p: ParsedResume): AppDa
   const newSkills: Skill[] = p.skills
     .filter((s) => !existing.has(s.toLowerCase()))
     .map((name) => ({ id: uid(), name, level: "intermediario" }));
+  const existingLangs = new Set(data.languages.map((l) => l.name.toLowerCase()));
   return {
     ...data,
     originalResumeText: text,
     profile: {
       ...data.profile,
-      fullName: data.profile.fullName || p.fullName,
-      email: data.profile.email || p.email,
-      phone: data.profile.phone || p.phone,
-      linkedin: data.profile.linkedin || p.linkedin,
-      summary: data.profile.summary || p.summary,
+      fullName: p.fullName || data.profile.fullName,
+      email: p.email || data.profile.email,
+      phone: p.phone || data.profile.phone,
+      linkedin: p.linkedin || data.profile.linkedin,
+      summary: p.summary || data.profile.summary,
     },
     skills: [...data.skills, ...newSkills],
+    languages: [
+      ...data.languages,
+      ...p.languages.filter((l) => !existingLangs.has(l.toLowerCase())).map((name) => ({ id: uid(), name, level: "" })),
+    ],
   };
 }
