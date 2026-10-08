@@ -1,17 +1,20 @@
 import { useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Upload, FileText } from "lucide-react";
+import { Upload, FileText, FileDown } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PageHeader } from "@/components/common";
 import { ExperienceEditor, SkillsEditor, EducationEditor, CertificationEditor, LanguageEditor, BasicInfoForm } from "@/components/editors";
 import { ResumePreview } from "@/components/ResumePreview";
 import { useStore } from "@/lib/store";
 import { buildBaseResume, calculateATSScore, resumeToPlainText } from "@/lib/resume-engine";
-import { applyParsed, parseResume, readResumeFile } from "@/lib/resume-import";
+import { applyParsed, parseResume, readResumeFile, type ParsedResume } from "@/lib/resume-import";
 import { downloadFile } from "@/lib/storage";
+import { exportResumePdf } from "@/lib/pdf-export";
 
 export const Route = createFileRoute("/app/curriculo")({
   validateSearch: (s: Record<string, unknown>) => ({ importar: s["importar"] === true || s["importar"] === "true" ? true : undefined }),
@@ -28,6 +31,8 @@ function CurriculoPage() {
   const { data, update } = useStore();
   const [open, setOpen] = useState(!!importar);
   const [text, setText] = useState("");
+  const [parsed, setParsed] = useState<ParsedResume | null>(null);
+  const [reading, setReading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const content = buildBaseResume(data);
   const ats = calculateATSScore(content);
