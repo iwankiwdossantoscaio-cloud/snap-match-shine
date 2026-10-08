@@ -34,11 +34,14 @@ function CurriculoPage() {
 
   const runImport = () => {
     if (text.trim().length < 30) { toast.error("Cole um texto de currículo um pouco mais completo."); return; }
-    const parsed = parseResume(text);
+    setParsed(parseResume(text));
+  };
+
+  const confirmImport = () => {
+    if (!parsed) return;
     update((d) => applyParsed(d, text, parsed));
-    toast.success(`Importado: ${parsed.skills.length} skills identificadas. Revise e complete os dados.`);
-    setOpen(false);
-    setText("");
+    toast.success("Informações salvas. Complete experiências e formação abaixo.");
+    setOpen(false); setText(""); setParsed(null);
   };
 
   return (
@@ -46,7 +49,8 @@ function CurriculoPage() {
       <PageHeader title="Meu Currículo" description="Este é o seu currículo original. As versões personalizadas nunca o alteram."
         actions={<>
           <Button variant="outline" onClick={() => setOpen(true)}><Upload /> Importar</Button>
-          <Button variant="outline" onClick={() => downloadFile("curriculo-original.txt", resumeToPlainText(content), "text/plain")}><FileText /> Baixar .txt</Button>
+          <Button variant="outline" onClick={() => downloadFile("curriculo-original.txt", resumeToPlainText(content), "text/plain")}><FileText /> .txt</Button>
+          <Button variant="outline" onClick={async () => { try { const n = await exportResumePdf(content); toast.success(`PDF gerado: ${n}`); } catch { toast.error("Falha ao gerar PDF."); } }}><FileDown /> PDF</Button>
         </>} />
       <div className="grid gap-6 xl:grid-cols-[1fr_420px]">
         <div className="space-y-6">
@@ -70,23 +74,54 @@ function CurriculoPage() {
         </aside>
       </div>
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-2xl">
+      <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) setParsed(null); }}>
+        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Importar currículo</DialogTitle>
-            <DialogDescription>Cole o texto do seu currículo ou envie um arquivo .txt. A extração usa regras locais (sem IA) — revise os dados depois.</DialogDescription>
+            <DialogTitle>{parsed ? "Revise suas informações antes de continuar." : "Importar currículo"}</DialogTitle>
+            <DialogDescription>
+              {parsed ? "A extração usa regras locais (sem IA) e pode conter erros. Corrija o que for preciso; nada é salvo até você confirmar."
+                : "Envie um PDF, DOCX ou TXT, ou cole o texto do seu currículo. O arquivo é lido apenas no seu navegador."}
+            </DialogDescription>
           </DialogHeader>
-          <Textarea rows={12} value={text} onChange={(e) => setText(e.target.value)} placeholder="Cole aqui o conteúdo do seu currículo…" />
-          <div className="flex flex-wrap justify-between gap-2">
-            <Button variant="outline" onClick={() => fileRef.current?.click()}><Upload /> Enviar .txt</Button>
-            <Button onClick={runImport}>Importar dados</Button>
-          </div>
-          <input ref={fileRef} type="file" accept=".txt,.md,text/plain" className="hidden" onChange={async (e) => {
-            const f = e.target.files?.[0];
-            e.target.value = "";
-            if (!f) return;
-            try { setText(await readResumeFile(f)); } catch (err) { toast.error(err instanceof Error ? err.message : "Falha na importação."); }
-          }} />
+          {!parsed ? (
+            <>
+              <Textarea rows={12} value={text} onChange={(e) => setText(e.target.value)} placeholder="Cole aqui o conteúdo do seu currículo…" />
+              <div className="flex flex-wrap justify-between gap-2">
+                <Button variant="outline" disabled={reading} onClick={() => fileRef.current?.click()}><Upload /> {reading ? "Lendo arquivo…" : "Enviar PDF, DOCX ou TXT"}</Button>
+                <Button onClick={runImport}>Analisar texto</Button>
+              </div>
+              <input ref={fileRef} type="file" accept=".pdf,.docx,.txt,.md,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" className="hidden" onChange={async (e) => {
+                const f = e.target.files?.[0];
+                e.target.value = "";
+                if (!f) return;
+                setReading(true);
+                try { setText(await readResumeFile(f)); toast.success("Texto extraído. Clique em Analisar texto."); } catch (err) { toast.error(err instanceof Error ? err.message : "Falha na importação."); }
+                finally { setReading(false); }
+              }} />
+            </>
+          ) : (
+            <div className="space-y-3 text-sm">
+              {([["fullName", "Nome"], ["email", "Email (opcional)"], ["phone", "Telefone"], ["linkedin", "LinkedIn"]] as const).map(([k, l]) => (
+                <label key={k} className="block"><span className="text-xs font-medium">{l}</span>
+                  <Input value={parsed[k]} onChange={(e) => setParsed({ ...parsed, [k]: e.target.value })} /></label>
+              ))}
+              <label className="block"><span className="text-xs font-medium">Resumo</span>
+                <Textarea rows={3} value={parsed.summary} onChange={(e) => setParsed({ ...parsed, summary: e.target.value })} /></label>
+              <div><span className="text-xs font-medium">Skills identificadas (clique para remover)</span>
+                <div className="mt-1 flex flex-wrap gap-1.5">
+                  {parsed.skills.length ? parsed.skills.map((s) => (
+                    <Badge key={s} variant="secondary" className="cursor-pointer" onClick={() => setParsed({ ...parsed, skills: parsed.skills.filter((x) => x !== s) })}>{s} ×</Badge>
+                  )) : <span className="text-muted-foreground">Nenhuma</span>}
+                </div></div>
+              <div><span className="text-xs font-medium">Idiomas identificados</span>
+                <div className="mt-1 flex flex-wrap gap-1.5">{parsed.languages.length ? parsed.languages.map((s) => <Badge key={s} variant="outline">{s}</Badge>) : <span className="text-muted-foreground">Nenhum</span>}</div></div>
+              <p className="text-xs text-muted-foreground">Experiências e formação devem ser conferidas e adicionadas no editor após a importação.</p>
+              <div className="flex justify-between gap-2">
+                <Button variant="outline" onClick={() => setParsed(null)}>Voltar</Button>
+                <Button onClick={confirmImport}>Confirmar e salvar</Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
