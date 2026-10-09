@@ -87,6 +87,8 @@ export interface MatchResult {
   keywords: number;
   location: number;
   salary: number;
+  role: number;
+  evaluated: string[];
   matchedSkills: string[];
   missingSkills: string[];
   strengths: string[];
@@ -132,6 +134,9 @@ export interface ResumeVersion {
 export interface Settings {
   showDemoJobs: boolean;
   defaultWorkMode: WorkMode | "";
+  notifyNewMatches: boolean;
+  notifyMinMatch: number;
+  keepOriginalFile: boolean;
 }
 
 export interface AppData {
