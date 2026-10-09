@@ -41,7 +41,7 @@ export function createEmptyData(): AppData {
     originalResumeText: "",
     resumeVersions: [],
     savedJobIds: [],
-    settings: { showDemoJobs: true, defaultWorkMode: "" },
+    settings: { showDemoJobs: true, defaultWorkMode: "", notifyNewMatches: false, notifyMinMatch: 75, keepOriginalFile: true },
   };
 }
 

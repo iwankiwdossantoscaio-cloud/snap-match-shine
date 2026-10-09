@@ -132,6 +132,9 @@ export interface ResumeVersion {
 export interface Settings {
   showDemoJobs: boolean;
   defaultWorkMode: WorkMode | "";
+  notifyNewMatches: boolean;
+  notifyMinMatch: number;
+  keepOriginalFile: boolean;
 }
 
 export interface AppData {
