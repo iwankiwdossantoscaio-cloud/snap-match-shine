@@ -87,6 +87,8 @@ export interface MatchResult {
   keywords: number;
   location: number;
   salary: number;
+  role: number;
+  evaluated: string[];
   matchedSkills: string[];
   missingSkills: string[];
   strengths: string[];

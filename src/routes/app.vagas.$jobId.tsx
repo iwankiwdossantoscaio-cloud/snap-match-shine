@@ -24,7 +24,7 @@ function JobPage() {
   if (!job) return <p className="text-muted-foreground">Vaga não encontrada. <Link to="/app/vagas" className="text-primary-strong">Voltar</Link></p>;
   const m = calculateMatchScore(data, job);
   const saved = data.savedJobIds.includes(job.id);
-  const bars: [string, number][] = [["Skills", m.skills], ["Experiência", m.experience], ["Palavras-chave", m.keywords], ["Formação", m.education], ["Localização", m.location], ["Salário", m.salary]];
+  const bars: [string, number, string][] = [["Skills", m.skills, "skills"], ["Experiência", m.experience, "experience"], ["Palavras-chave", m.keywords, "keywords"], ["Cargo/Senioridade", m.role, "role"], ["Formação", m.education, "education"], ["Localização", m.location, "location"], ["Salário/Preferências", m.salary, "salary"]];
   const toggleSave = () => {
     update((d) => ({ ...d, savedJobIds: saved ? d.savedJobIds.filter((x) => x !== job.id) : [...d.savedJobIds, job.id] }));
     toast.success(saved ? "Vaga removida das salvas." : "Vaga salva.");
@@ -74,8 +74,8 @@ function JobPage() {
         </div>
         <aside className="space-y-3 self-start rounded-lg border bg-card p-5 shadow-card lg:sticky lg:top-20">
           <div className="flex justify-center"><ScoreRing score={m.overall} label="match" /></div>
-          {bars.map(([l, v]) => (
-            <div key={l}><div className="mb-1 flex justify-between text-xs"><span>{l}</span><span className="tabular-nums">{v}%</span></div><Progress value={v} aria-label={l} className="h-1.5" /></div>
+          {bars.map(([l, v, k]) => (
+            <div key={l}><div className="mb-1 flex justify-between text-xs"><span>{l}</span><span className="tabular-nums">{m.evaluated.includes(k) ? `${v}%` : "sem dados"}</span></div><Progress value={m.evaluated.includes(k) ? v : 0} aria-label={l} className="h-1.5" /></div>
           ))}
           <p className="text-xs text-muted-foreground">Calculado por regras locais (sem IA){m.incomplete ? ". Análise parcial: complete skills, formação e preferências para mais precisão." : "."}</p>
         </aside>
