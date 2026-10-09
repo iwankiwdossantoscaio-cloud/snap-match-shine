@@ -17,9 +17,9 @@ import { Route as AppCurriculoRouteImport } from './routes/app.curriculo'
 import { Route as AppMatchesRouteImport } from './routes/app.matches'
 import { Route as AppOnboardingRouteImport } from './routes/app.onboarding'
 import { Route as AppPerfilRouteImport } from './routes/app.perfil'
-import { Route as AppVersoesRouteImport } from './routes/app.versoes'
 import { Route as AppVagasIndexRouteImport } from './routes/app.vagas.index'
 import { Route as AppVagasJobIdRouteImport } from './routes/app.vagas.$jobId'
+import { Route as AppVersoesIndexRouteImport } from './routes/app.versoes.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -61,11 +61,6 @@ const AppPerfilRoute = AppPerfilRouteImport.update({
   path: '/perfil',
   getParentRoute: () => AppRoute,
 } as any)
-const AppVersoesRoute = AppVersoesRouteImport.update({
-  id: '/versoes',
-  path: '/versoes',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppVagasIndexRoute = AppVagasIndexRouteImport.update({
   id: '/vagas/',
   path: '/vagas/',
@@ -74,6 +69,11 @@ const AppVagasIndexRoute = AppVagasIndexRouteImport.update({
 const AppVagasJobIdRoute = AppVagasJobIdRouteImport.update({
   id: '/vagas/$jobId',
   path: '/vagas/$jobId',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppVersoesIndexRoute = AppVersoesIndexRouteImport.update({
+  id: '/versoes/',
+  path: '/versoes/',
   getParentRoute: () => AppRoute,
 } as any)
 
@@ -85,10 +85,10 @@ export interface FileRoutesByFullPath {
   '/app/matches': typeof AppMatchesRoute
   '/app/onboarding': typeof AppOnboardingRoute
   '/app/perfil': typeof AppPerfilRoute
-  '/app/versoes': typeof AppVersoesRoute
   '/app/': typeof AppIndexRoute
   '/app/vagas/$jobId': typeof AppVagasJobIdRoute
   '/app/vagas/': typeof AppVagasIndexRoute
+  '/app/versoes/': typeof AppVersoesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -97,10 +97,10 @@ export interface FileRoutesByTo {
   '/app/matches': typeof AppMatchesRoute
   '/app/onboarding': typeof AppOnboardingRoute
   '/app/perfil': typeof AppPerfilRoute
-  '/app/versoes': typeof AppVersoesRoute
   '/app': typeof AppIndexRoute
   '/app/vagas/$jobId': typeof AppVagasJobIdRoute
   '/app/vagas': typeof AppVagasIndexRoute
+  '/app/versoes': typeof AppVersoesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -111,10 +111,10 @@ export interface FileRoutesById {
   '/app/matches': typeof AppMatchesRoute
   '/app/onboarding': typeof AppOnboardingRoute
   '/app/perfil': typeof AppPerfilRoute
-  '/app/versoes': typeof AppVersoesRoute
   '/app/': typeof AppIndexRoute
   '/app/vagas/$jobId': typeof AppVagasJobIdRoute
   '/app/vagas/': typeof AppVagasIndexRoute
+  '/app/versoes/': typeof AppVersoesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -126,10 +126,10 @@ export interface FileRouteTypes {
     | '/app/matches'
     | '/app/onboarding'
     | '/app/perfil'
-    | '/app/versoes'
     | '/app/'
     | '/app/vagas/$jobId'
     | '/app/vagas/'
+    | '/app/versoes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -138,10 +138,10 @@ export interface FileRouteTypes {
     | '/app/matches'
     | '/app/onboarding'
     | '/app/perfil'
-    | '/app/versoes'
     | '/app'
     | '/app/vagas/$jobId'
     | '/app/vagas'
+    | '/app/versoes'
   id:
     | '__root__'
     | '/'
@@ -151,10 +151,10 @@ export interface FileRouteTypes {
     | '/app/matches'
     | '/app/onboarding'
     | '/app/perfil'
-    | '/app/versoes'
     | '/app/'
     | '/app/vagas/$jobId'
     | '/app/vagas/'
+    | '/app/versoes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -220,13 +220,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPerfilRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/versoes': {
-      id: '/app/versoes'
-      path: '/versoes'
-      fullPath: '/app/versoes'
-      preLoaderRoute: typeof AppVersoesRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/app/vagas/': {
       id: '/app/vagas/'
       path: '/vagas'
@@ -241,6 +234,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppVagasJobIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/versoes/': {
+      id: '/app/versoes/'
+      path: '/versoes'
+      fullPath: '/app/versoes/'
+      preLoaderRoute: typeof AppVersoesIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -250,10 +250,10 @@ interface AppRouteChildren {
   AppMatchesRoute: typeof AppMatchesRoute
   AppOnboardingRoute: typeof AppOnboardingRoute
   AppPerfilRoute: typeof AppPerfilRoute
-  AppVersoesRoute: typeof AppVersoesRoute
   AppIndexRoute: typeof AppIndexRoute
   AppVagasJobIdRoute: typeof AppVagasJobIdRoute
   AppVagasIndexRoute: typeof AppVagasIndexRoute
+  AppVersoesIndexRoute: typeof AppVersoesIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -262,10 +262,10 @@ const AppRouteChildren: AppRouteChildren = {
   AppMatchesRoute: AppMatchesRoute,
   AppOnboardingRoute: AppOnboardingRoute,
   AppPerfilRoute: AppPerfilRoute,
-  AppVersoesRoute: AppVersoesRoute,
   AppIndexRoute: AppIndexRoute,
   AppVagasJobIdRoute: AppVagasJobIdRoute,
   AppVagasIndexRoute: AppVagasIndexRoute,
+  AppVersoesIndexRoute: AppVersoesIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
