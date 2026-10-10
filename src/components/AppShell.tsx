@@ -66,7 +66,7 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
             <div className="font-medium text-foreground">
               {status === "unavailable" ? "Armazenamento indisponível" : saveError ? "Erro ao salvar" : "Sessão local ativa"}
             </div>
-            Dados salvos apenas neste navegador · #{data.sessionId.slice(0, 6)}
+            Dados salvos apenas neste navegador{status === "loading" ? "" : ` · #${data.sessionId.slice(0, 6)}`}
           </div>
         </div>
         <div className="grid grid-cols-2 gap-1.5">

@@ -30,7 +30,7 @@ function JobPage() {
     toast.success(saved ? "Vaga removida das salvas." : "Vaga salva.");
   };
   const tailor = () => {
-    if (!data.profile.fullName && !data.experiences.length) { toast.error("Comece criando seu currículo antes de personalizar."); navigate({ to: "/app/curriculo" }); return; }
+    if (!data.profile.fullName && !data.experiences.length) { toast.error("Comece criando seu currículo antes de personalizar."); navigate({ to: "/app/curriculo", search: { importar: undefined } }); return; }
     const v = createVersion(data, job);
     update((d) => ({ ...d, resumeVersions: [v, ...d.resumeVersions] }));
     toast.success("Currículo personalizado criado. Revise antes de exportar.");
